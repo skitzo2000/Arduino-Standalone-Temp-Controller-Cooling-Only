@@ -3,13 +3,13 @@
 
 // DS18b20 Temp Sensor Data wire is plugged into port 4 on the Arduino
 #define ONE_WIRE_BUS 4
-
+//#define TEMPERATURE_PRECISION 12
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
 //Set pin for Fan control through tip120
 int TIP120pin = 11;
 //Set Temp max to turn on Fan in Celcius
-int hightemp = 26;
+int hightemp = 18;
 //SEt Temperature return variable
 int temp = 0;
 // Pass our oneWire reference to Dallas Temperature. 
@@ -23,6 +23,7 @@ void setup(void)
   pinMode(TIP120pin, OUTPUT); // Set pin for output to control TIP120 Base pin
   // Start up the library
   sensors.begin();
+  delay(2000);
 }
 
 void call_temp(){
@@ -30,7 +31,7 @@ void call_temp(){
   // request to all devices on the bus
   sensors.requestTemperatures(); // Send the command to get temperatures
   temp = sensors.getTempCByIndex(0);
-  Serial.print("Temperature for the device 1 (index 0) is: ");
+  //Serial.print("Temperature for the device 1 (index 0) is: ");
   Serial.println(temp);  
 }
 //function to compare temperature and return the difference between the high temp setting and current temp
@@ -44,10 +45,11 @@ int check_temp(){
 void loop(void)
 { 
   call_temp();
-  Serial.println(check_temp());
+  //Serial.println(check_temp());
   if (check_temp() < 0) {  //if the current temp is higher than the current temp turn on the fan
       analogWrite(TIP120pin, 255);
   } else {
      analogWrite(TIP120pin, 0);
   }
+  delay(1000);
 }
